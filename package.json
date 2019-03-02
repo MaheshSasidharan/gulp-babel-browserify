@@ -20,6 +20,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-exit": "0.0.2",
     "gulp-less": "^4.0.1",
+    "gulp-plumber": "^1.2.1",
     "gulp-sourcemaps": "^2.6.5",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",

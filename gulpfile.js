@@ -13,8 +13,10 @@ const babel = require("babelify");
 
 const paths = {
   less: {
-    source: "public/styles/less/*.less",
-    destCSSFolder: "public/styles/css",
+    source: [
+      "public/styles/less/mainStyle.less",
+      "public/styles/less/mainStyle2.less"
+    ],
     destMapFolder: "./maps"
   },
   js: {
@@ -27,28 +29,18 @@ const paths = {
   },
   build: {
     destBuildFolder: "dist",
-    destCSSFileName: "bundle.min.css",
-    destJSFileName: "bundle.min.js"
+    destMinCSSFileName: "bundle.min.css",
+    destMinJSFileName: "bundle.min.js"
   }
 }
 
-gulp.task("lessToCSS", function (done) {
+gulp.task("less", (done) => {
   gulp.src(paths.less.source)
     .pipe(buffer())
     .pipe(sourcemaps.init())
-    .pipe(less({ strictMath: true }))
-    .pipe(sourcemaps.write(paths.less.destMapFolder))
-    .pipe(gulp.dest(paths.less.destCSSFolder));
-
-  done();
-});
-
-gulp.task("bundleCSS", function (done) {
-  gulp.src(paths.less.destCSSFolder + "/*.css")
-    .pipe(buffer())
-    .pipe(sourcemaps.init())
+    .pipe(less({ strictMath: true })) // .pipe(gulp.dest(paths.less.destCSSFolder)) // if for some reason css is needed, then uncomment this
     .pipe(cleanCSS({ debug: true }))
-    .pipe(concat(paths.build.destCSSFileName))
+    .pipe(concat(paths.build.destMinCSSFileName))
     .pipe(sourcemaps.write(paths.less.destMapFolder))
     .pipe(gulp.dest(paths.build.destBuildFolder));
 
@@ -61,7 +53,7 @@ function compile(watch) {
   function rebundle() {
     bundler.bundle()
       .on("error", function (err) { console.error(err); this.emit("end"); })
-      .pipe(source(paths.build.destJSFileName))
+      .pipe(source(paths.build.destMinJSFileName))
       .pipe(buffer())
       .pipe(sourcemaps.init({ loadMaps: true }))
       .pipe(uglify())
@@ -88,7 +80,6 @@ gulp.task("js", (done) => {
   compile();
   done();
 });
-gulp.task("less", gulp.series("lessToCSS", "bundleCSS"), (done) => done());
-gulp.task("default", gulp.parallel("js", "less"), (done) => done());
+gulp.task("default", gulp.series("js", "less"), (done) => done());
 
 gulp.task("watch", function (done) { watch(); done(); });
