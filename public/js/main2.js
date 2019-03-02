@@ -1,0 +1,1 @@
+setTimeout(() => {console.log("FROM MAIN 2")}, 1300);
